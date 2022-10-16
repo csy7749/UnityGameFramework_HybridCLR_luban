@@ -6,6 +6,7 @@
 //------------------------------------------------------------
 
 using UnityEngine;
+using UnityEngine.UI;
 using UnityGameFramework.Runtime;
 
 namespace Game.Hotfix
@@ -13,6 +14,17 @@ namespace Game.Hotfix
     public class MenuForm : UGuiForm
     {
         private ProcedureMenu m_ProcedureMenu = null;
+        public Button btnGameStart;
+
+        protected override void OnInit(object userData)
+        {
+            base.OnInit(userData);
+
+            btnGameStart.onClick.AddListener(() =>
+            {
+                GameEntry.Event.Fire(this, NormalUIEventArgs.Create("GameStart"));
+            });
+        }
 
         protected override void OnOpen(object userData)
         {

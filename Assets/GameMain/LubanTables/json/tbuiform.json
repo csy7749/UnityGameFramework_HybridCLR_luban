@@ -7,7 +7,7 @@
     "PauseCoveredUIForm": true
   },
   {
-    "Id": 100,
+    "Id": 200,
     "AssetName": "MenuForm",
     "UIGroupName": "Default",
     "AllowMultiInstance": false,

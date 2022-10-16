@@ -12,9 +12,9 @@ namespace Game.Hotfix
         private MenuForm m_MenuForm = null;
         private GameMode m_GameMode;
 
-        public void StartGame(GameMode gameMode)
+        public void StartGame(object sender, GameEventArgs e)
         {
-            m_GameMode = gameMode;
+            //m_GameMode = gameMode;
             m_StartGame = true;
         }
 
@@ -23,6 +23,7 @@ namespace Game.Hotfix
             base.OnEnter(procedureOwner);
 
             GameEntry.Event.Subscribe(OpenUIFormSuccessEventArgs.EventId, OnOpenUIFormSuccess);
+            GameEntry.Event.Subscribe(NormalUIEventArgs.EventId, StartGame);
 
             m_StartGame = false;
             
@@ -31,7 +32,13 @@ namespace Game.Hotfix
                 Position = Vector3.zero,
                 Rotation = Quaternion.identity
             });
-            
+
+            GameEntry.Entity.ShowEntity(typeof(TestEntity), "Default", 100, new TestEntityData(GameEntry.Entity.GenerateSerialId(), 10000)
+            {
+                Position = Vector3.one,
+                Rotation = Quaternion.identity
+            });
+
             GameEntry.UI.OpenUIForm(UIFormId.MenuForm, this);
         }
 

@@ -22,7 +22,7 @@ namespace Game.Hotfix
         /// <summary>
         /// 主菜单。
         /// </summary>
-        MenuForm = 100,
+        MenuForm = 200,
 
         /// <summary>
         /// 设置。

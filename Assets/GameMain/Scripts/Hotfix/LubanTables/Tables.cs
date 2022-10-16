@@ -22,6 +22,7 @@ public sealed partial class Tables : BaseLubanTables
     public TbSound TbSound {get; private set; }
     public TbUIForm TbUIForm {get; private set; }
     public TbUISound TbUISound {get; private set; }
+    public TbTest TbTest {get; private set; }
 
     public Tables() { }
 	
@@ -45,6 +46,8 @@ public sealed partial class Tables : BaseLubanTables
         tables.Add("TbUIForm", TbUIForm);
         TbUISound = new TbUISound(await loader("tbuisound")); 
         tables.Add("TbUISound", TbUISound);
+        TbTest = new TbTest(await loader("tbtest")); 
+        tables.Add("TbTest", TbTest);
 
         TbEntity.Resolve(tables); 
         TbMusic.Resolve(tables); 
@@ -52,6 +55,7 @@ public sealed partial class Tables : BaseLubanTables
         TbSound.Resolve(tables); 
         TbUIForm.Resolve(tables); 
         TbUISound.Resolve(tables); 
+        TbTest.Resolve(tables); 
     }
 
     public override void TranslateText(System.Func<string, string, string> translator)
@@ -62,6 +66,7 @@ public sealed partial class Tables : BaseLubanTables
         TbSound.TranslateText(translator); 
         TbUIForm.TranslateText(translator); 
         TbUISound.TranslateText(translator); 
+        TbTest.TranslateText(translator); 
     }
 }
 
