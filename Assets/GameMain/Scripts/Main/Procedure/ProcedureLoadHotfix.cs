@@ -4,6 +4,7 @@ using System.Reflection;
 using GameFramework.Fsm;
 using GameFramework.Procedure;
 using GameFramework.Resource;
+using HybridCLR;
 using UnityEngine;
 using UnityGameFramework.Runtime;
 
@@ -55,6 +56,7 @@ namespace Game
 #else
             LoadMetadataForAOTAssembly();
 #endif
+            LoadMetadataForAOTAssembly();
         }
 
         protected override void OnLeave(IFsm<IProcedureManager> procedureOwner, bool isShutdown)
@@ -113,7 +115,7 @@ namespace Game
         /// 为aot assembly加载原始metadata， 这个代码放aot或者热更新都行。
         /// 一旦加载后，如果AOT泛型函数对应native实现不存在，则自动替换为解释模式执行
         /// </summary>
-        private unsafe void OnLoadMetadataAssetSuccess(string assetName, object asset, float duration, object userData)
+        private void OnLoadMetadataAssetSuccess(string assetName, object asset, float duration, object userData)
         {
             // 可以加载任意aot assembly的对应的dll。但要求dll必须与unity build过程中生成的裁剪后的dll一致，而不能直接使用
             // 原始dll。
@@ -129,24 +131,23 @@ namespace Game
 
             // 注意，补充元数据是给AOT dll补充元数据，而不是给热更新dll补充元数据。
             // 热更新dll不缺元数据，不需要补充，如果调用LoadMetadataForAOTAssembly会返回错误
+            Log.Debug(string.Format("加载名字{0}", assetName));
             byte[] bytes = (asset as TextAsset).bytes;
-            fixed (byte* ptr = bytes)
+ 
+            // 加载assembly对应的dll，会自动为它hook。一旦aot泛型函数的native函数不存在，用解释器版本代码
+            LoadImageErrorCode err = RuntimeApi.LoadMetadataForAOTAssembly(bytes);
+            if (err == 0)
             {
-                //加载assembly对应的dll，会自动为它hook。一旦aot泛型函数的native函数不存在，用解释器版本代码
-                int err = HuatuoApi.LoadMetadataForAOTAssembly((IntPtr)ptr, bytes.Length);
-                if (err == 0)
+                m_LoadMetadataCount++;
+                if (m_LoadMetadataCount >= s_AotDllList.Count)
                 {
-                    m_LoadMetadataCount++;
-                    if (m_LoadMetadataCount >= s_AotDllList.Count)
-                    {
-                        LoadHotfixAssembly();
-                    }
-                }
-                else
-                {
-                    Log.Error("LoadMetadataForAOTAssembly. ret:" + err);
+                    LoadHotfixAssembly();
                 }
             }
+            else
+            {
+                Log.Error($"LoadMetadataForAOTAssembly:{assetName}. ret:{err}");
+            }          
         }
 
         private void OnLoadLoadMetadataAssetFail(string assetName, LoadResourceStatus status, string errorMessage,

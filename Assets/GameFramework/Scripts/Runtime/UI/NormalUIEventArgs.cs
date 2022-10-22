@@ -1,4 +1,3 @@
-using CodiceApp.EventTracking.Plastic;
 using GameFramework;
 using GameFramework.Event;
 using System.Collections;
